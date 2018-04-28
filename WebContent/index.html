@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Blast!</title>
+	<meta charset="UTF-8" />
+	<meta name="Version" content="<%= ws.Utils.getVersion() %>" />
+	<meta name="Description" content="Dynablaster Bomberman clone Blast! Javascript HTML5">
+	<script src="js/Game.js"></script>
+	<script src="js/Constants.js"></script>
+	<script src="js/Messages.js"></script>
+	<script src="js/Levels.js"></script>
+	<script src="js/Sprite.js"></script>
+	<script src="js/Player.js"></script>
+	<script src="js/Enemy.js"></script>
+	<script src="js/Menu.js"></script>
+	<script src="js/Animation.js"></script>
+	<script src="js/Highscore.js"></script>
+	<script src="js/Instructions.js"></script>
+	<script src="js/Sound.js"></script>
+	<script src="js/Info.js"></script>
+	<script src="js/Options.js"></script>
+	<script src="js/Multiplayer.js"></script>
+	<script src="js/Test.js"></script>
+	<script src="lib/Font.js"></script>
+	<script src="lib/jquery-1.12.0.min.js"></script>
+	<script src="lib/jqColorPicker.min.js"></script>
+	<script src="lib/perfect-scrollbar.jquery.js"></script>
+	<link rel="shortcut icon" href="favicon.ico" />
+	<link rel="stylesheet" href="css/perfect-scrollbar.css" />
+	<style type="text/css">
+		.mainColor {
+			background-color: transparent;
+			color: #bbbb00;
+		}
+		.input {
+			border: #bbbb00 1px dotted;
+			font-size: calc(6px * @zoom@);
+		}
+		.scroll {
+			position: relative;
+		}
+		#infoContainer {
+			margin-top: 6px;
+			margin-left: -1px;
+			overflow-x: hidden;
+			overflow-y: auto;
+			max-width: calc(87px * @zoom@);
+			max-height: calc(298px * @zoom@);
+			font-size: calc(8px * @zoom@);
+			color: #bbbb00;
+			text-shadow: 1px 1px 5px black;
+			line-height: calc(16px * @zoom@);
+		}
+		.infoSection {
+			border: #bbbb00 1px solid;
+			border-radius: 2px;
+			cursor: default;
+			padding: 5px 9px;
+		}
+		.toggled > :not(:first-child) {
+			display: none;
+		}
+		.radio {
+			font-size: calc(5px * @zoom@);
+			line-height: calc(10px * @zoom@);
+		}
+		.textField {
+			margin: 0 -3px;
+			width: calc(72px * @zoom@);
+			font-size: calc(8px * @zoom@);
+			padding: 0 1px;
+			margin: -1px;
+		}
+		#infoContainer > div {
+			margin-left: 6px;
+		}
+		select[disabled] {
+			color: darkgrey;
+		}
+		select {
+			margin: 0 -3px;
+			width: calc(78px * @zoom@);
+			font-size: 6px;
+		}
+		.color {
+			cursor: pointer;
+			border: 1px solid rgb(187, 187, 0);
+			border-radius: 5px;
+			background-color: rgb(63, 190, 28);
+			color: rgb(34, 34, 34);
+			font-family: Blacktop;
+			min-width: 10px;
+			float: right;
+			min-height: 10px;
+			margin-top: 2px;
+		}
+		.msgDlg {
+			position: absolute;
+			top: 13px;
+			margin-left: calc(105px * @zoom@);
+			width: calc(260px * @zoom@);
+			font-size: calc(8px * @zoom@);
+			background-color: black;
+			text-align: center;
+			padding: 4px;
+		}
+		.btn:focus {
+			outline: 1px dotted;
+		}
+		.msgError {
+			color: red;
+		}
+		.chat {
+			position: absolute;
+			top: calc(256px * @zoom@);
+			margin-left: calc(92px * @zoom@);
+			width: calc(295px * @zoom@);
+			min-height: calc(40px * @zoom@);
+			background-color: black;
+			opacity: 0.6;
+			overflow: hidden;
+		}
+		.inactive {
+			opacity: 0.4;
+		}
+		.btnClose {
+			cursor: pointer;
+			position: absolute;
+			top: -1px; right:
+			1px;
+			font-size: 6px;
+			color: #bbbb00;
+		}
+		.life {
+			background: transparent url('sprites.png') no-repeat scroll -389px -105px;
+			height: 13px;
+			width: 12px;
+			float: left;
+		}
+		#loading {
+			text-align: center;
+			position: relative;
+			top: calc(-165px * @zoom@);
+			font-weight: bold;
+			font-family: sans-serif;
+			font-size: calc(16px * @zoom@)
+		}
+		#news {
+			font: normal 12px sans-serif;
+			position: absolute;
+			left: 20px;
+			bottom: 20px;
+			right: 20px;
+		}
+	</style>
+</head>
+
+<body onload="new Game(@zoom@)" style="margin: 0">
+	<div style="margin: 0 auto; width: calc(402px * @zoom@)">
+		<canvas id="canvasInfo" width="90" height="304" style="border:1px solid #808080; border-right:none">
+		</canvas><canvas id="canvasGame" width="304" height="304" style="border:1px solid #808080; border-left: none">
+			Your browser does not support the HTML5 canvas tag.
+		</canvas>
+	</div>
+	<div style="margin: 0 auto; width: calc(396px * @zoom@); height: 1px; position: relative; top: calc(-310px * @zoom@)">
+		<div id="infoContainer" style="visibility: hidden" class="scroll">
+			<div style="margin: 0">
+				<fieldset id="you" class="infoSection">
+					<legend class="mainColor">You</legend>
+					<div class="infoLine">
+						<div>
+							<label id="playerName" style="cursor: pointer"></label>
+							<input id="playerNameInput" class="mainColor input textField" style="display: none" maxlength="20" />
+						</div>
+					</div>
+					<div class="infoLine">Color: <span class="color"></span></div>
+					<div class="infoLine">Score: <label id="infoScore">0</label></div>
+					<div class="infoLine">Lives: <div id="infoLives" style="float: right; margin-top: 7px"></div></div>
+				</fieldset>
+				<fieldset id="yourGame" class="infoSection toggled">
+					<legend class="mainColor">Your game</legend>
+					<div class="infoLine">Time
+						<label id="time"></label>
+					</div>
+					<div class="infoLine">
+						<div>
+							<label id="gameName" style="cursor: pointer"></label>
+							<input id="gameNameInput" class="mainColor input textField" style="display: none" maxlength="20" />
+						</div>
+					</div>
+					<div class="infoLine">Others are
+						<div class="radio"><input id="r1" name="infoOthers" value="closed" type="radio" style="margin: 0" checked="checked" /><label for="r1">Blocked</label></div>
+						<div class="radio"><input id="r2" name="infoOthers" value="allowRequest" type="radio" style="margin: 0" /><label for="r2">Required to ask</label></div>
+						<div class="radio"><input id="r3" name="infoOthers" value="open" type="radio" style="margin: 0" /><label for="r3">Free to enter</label></div>
+					</div>
+				</fieldset>
+				<fieldset id="activeGames" class="infoSection toggled">
+					<legend class="mainColor">Games</legend>
+					<select id="mpListGames" size="5" class="mainColor input"></select>
+				</fieldset>
+				<fieldset id="activePlayers" class="infoSection toggled">
+					<legend class="mainColor">Players</legend>
+					<select id="mpListPlayers" size="5" multiple="multiple" class="mainColor input"></select>
+				</fieldset>
+			</div>
+		</div>
+		<div id="mpMsgDlg" class="msgDlg mainColor input" style="display: none">
+			<div id="mpDlgClose" title="Close" class="btnClose">&#x274c;</div>
+			<div id="mpMsgText"></div>
+			<div id="mpDlgButtons" class="input" style="border: none; position: static">
+				<input id="mpDlgOk" type="button" value="OK" class="mainColor input btn" style="position: static"/>
+				<input id="mpDlgCancel" type="button" value="Cancel" class="mainColor input btn" style="position: static"/>
+			</div>
+		</div>
+		<div id="chatContainer" class="chat mainColor input inactive" style="display: none">
+			<div id="chatClose" title="Close" class="btnClose">&#x274c;</div>
+			<div id="chatList" style="font-size: calc(6px * @zoom@); margin-left: 2px"></div>
+			<input id="chatTxt" type="text" class="mainColor input" style="position: absolute; bottom: 2px; left: 2px; width: calc(288px * @zoom@)" maxlength="200"/>
+		</div>
+		<div style="position: absolute; top: calc(305px * @zoom@); width: 100%">
+			<div style="font: normal 12px sans-serif; text-align: center;">Programmed by Uwe Voigt, Graphics adapted from DynaBlaster by Hudson Soft</div>
+		</div>
+	</div>
+	<div id="loading">Loading...</div>
+	<div id="news" onclick="$(this).fadeOut()">
+		<p style="text-decoration: underline; font-weight: bold;">News</p>
+		<ul>
+			<li>configure sound and music under Options</li>
+		</ul>
+	</div>
+</body>
+</html>
